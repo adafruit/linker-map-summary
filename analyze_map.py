@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # MIT License
 #
 # Copyright (c) 2016 Scott Shawcroft for Adafruit Industries
@@ -64,7 +65,7 @@ with open(args.map_file) as f:
         elif line.strip() == "Linker script and memory map":
             memory_map_started = True
 
-sources = size_by_source.keys()
+sources = list(size_by_source.keys())
 sources.sort(key=lambda x: size_by_source[x])
 for source in sources:
     print("%s \t%s" % (os.path.normpath(source), size_by_source[source]))

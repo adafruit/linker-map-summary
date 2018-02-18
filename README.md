@@ -5,6 +5,8 @@ together portions in sections spread throughout the binary.
 This is useful to see the size impact of different portions of code after the
 linker has dropped unneeded sections.
 
+Requires python 2.7+ or 3.2+.
+
 ## Use
 `python analyze_map.py [--combine] firmware.elf.map`
 

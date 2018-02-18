@@ -30,7 +30,7 @@ with open(sys.argv[1]) as f:
     current_section = None
     for line in f:
         if memory_map_started:
-            if True or line.startswith((".", " .")):
+            if line.startswith((".", " .")):
                 pieces = line.split()
                 if line.startswith("."):
                     current_section = pieces[0]

@@ -2,6 +2,7 @@
 # MIT License
 #
 # Copyright (c) 2016 Scott Shawcroft for Adafruit Industries
+# Copyright (c) 2018 Ralph Versteegen
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -46,37 +47,55 @@ class SectionSize():
 
 size_by_source = {}
 with open(args.map_file) as f:
-    memory_map_started = False
+    lines = iter(f)
+    for line in lines:
+        if line.strip() == "Linker script and memory map":
+            break
+
     current_section = None
-    for line in f:
-        if memory_map_started:
-            if line.startswith((".", " .", " *fill*")):
-                pieces = line.strip().split(None, 3)  # Don't split paths containing spaces
-                if line.startswith("."):
-                    current_section = pieces[0]
-                elif len(pieces) >= 3 and "=" not in pieces and "before" not in pieces:
-                    if pieces[0] == "*fill*":
-                        source = pieces[0]
-                        size = int(pieces[-1], 16)
-                    else:
-                        source = pieces[-1]
-                        size = int(pieces[-2], 16)
+    split_line = None
+    for line in lines:
+        line = line.strip('\n')
+        if split_line:
+            # Glue a line that was split in two back together
+            if line.startswith(' ' * 16):
+                line = split_line + line
+            else:  # Shouldn't happen
+                print("Warning: discarding line ", split_line)
+            split_line = None
 
-                    if args.combine:
-                        if '.a(' in source:
-                            # path/to/archive.a(object.o)
-                            source = source[:source.index('.a(') + 2]
-                        elif source.endswith('.o'):
-                            where = max(source.rfind('\\'), source.rfind('/'))
-                            if where:
-                                source = source[:where + 1] + '*.o'
+        if line.startswith((".", " .", " *fill*")):
+            pieces = line.split(None, 3)  # Don't split paths containing spaces
 
-                    if source not in size_by_source:
-                        size_by_source[source] = SectionSize()
-                    size_by_source[source].add_section(current_section, size)
-        elif line.strip() == "Linker script and memory map":
-            memory_map_started = True
+            if line.startswith("."):
+                # Note: this line might be wrapped, with the size of the section
+                # on the next line, but we ignore the size anyway and will ignore that line
+                current_section = pieces[0]
+            elif len(pieces) == 1 and len(line) > 14:
+                # ld splits the rest of this line onto the next if the section name is too long
+                split_line = line
+            elif len(pieces) >= 3 and "=" not in pieces and "before" not in pieces:
+                if pieces[0] == "*fill*":
+                    source = pieces[0]
+                    size = int(pieces[-1], 16)
+                else:
+                    source = pieces[-1]
+                    size = int(pieces[-2], 16)
 
+                if args.combine:
+                    if '.a(' in source:
+                        # path/to/archive.a(object.o)
+                        source = source[:source.index('.a(') + 2]
+                    elif source.endswith('.o'):
+                        where = max(source.rfind('\\'), source.rfind('/'))
+                        if where:
+                            source = source[:where + 1] + '*.o'
+
+                if source not in size_by_source:
+                    size_by_source[source] = SectionSize()
+                size_by_source[source].add_section(current_section, size)
+
+# Print out summary
 sources = list(size_by_source.keys())
 sources.sort(key = lambda x: size_by_source[x].total())
 sumtotal = sumcode = sumdata = 0

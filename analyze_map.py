@@ -26,28 +26,28 @@ import sys
 
 size_by_source = {}
 with open(sys.argv[1]) as f:
-  memory_map_started = False
-  current_section = None
-  for line in f:
-    if memory_map_started:
-      if True or line.startswith((".", " .")):
-        pieces = line.split()
-        if line.startswith("."):
-          current_section = pieces[0]
-        elif len(pieces) >= 3 and current_section in [".rodata", ".text"] and "=" not in pieces and "before" not in pieces:
-          if pieces[0] == "*fill*":
-            source = pieces[0]
-            size = int(pieces[-1], 16)
-          else:
-            source = pieces[-1]
-            size = int(pieces[-2], 16)
-          if source not in size_by_source:
-            size_by_source[source] = 0
-          size_by_source[source] += size
-    elif line.strip() == "Linker script and memory map":
-      memory_map_started = True
+    memory_map_started = False
+    current_section = None
+    for line in f:
+        if memory_map_started:
+            if True or line.startswith((".", " .")):
+                pieces = line.split()
+                if line.startswith("."):
+                    current_section = pieces[0]
+                elif len(pieces) >= 3 and current_section in [".rodata", ".text"] and "=" not in pieces and "before" not in pieces:
+                    if pieces[0] == "*fill*":
+                        source = pieces[0]
+                        size = int(pieces[-1], 16)
+                    else:
+                        source = pieces[-1]
+                        size = int(pieces[-2], 16)
+                    if source not in size_by_source:
+                        size_by_source[source] = 0
+                    size_by_source[source] += size
+        elif line.strip() == "Linker script and memory map":
+            memory_map_started = True
 
 sources = size_by_source.keys()
 sources.sort(key=lambda x: size_by_source[x])
 for source in sources:
-  print(source, size_by_source[source])
+    print(source, size_by_source[source])

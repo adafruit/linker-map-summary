@@ -40,7 +40,7 @@ with open(args.map_file) as f:
     for line in f:
         if memory_map_started:
             if line.startswith((".", " .")):
-                pieces = line.split()
+                pieces = line.strip().split(None, 3)  # Don't split paths containing spaces
                 if line.startswith("."):
                     current_section = pieces[0]
                 elif len(pieces) >= 3 and current_section in [".rodata", ".text"] and "=" not in pieces and "before" not in pieces:
@@ -56,7 +56,7 @@ with open(args.map_file) as f:
                             # path/to/archive.a(object.o)
                             source = source[:source.index('.a(') + 2]
                         elif source.endswith('.o'):
-                            where = source.rfind('/')
+                            where = max(source.rfind('\\'), source.rfind('/'))
                             if where:
                                 source = source[:where + 1] + '*.o'
                     if source not in size_by_source:

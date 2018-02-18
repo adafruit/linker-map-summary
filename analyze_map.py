@@ -33,17 +33,28 @@ parser.add_argument('--combine', action='store_true',
                     help="All object files in an .a archive or in a directory are combined")
 args = parser.parse_args()
 
+class SectionSize():
+    code = 0
+    data = 0  # Including metadata like import tables
+    def total(self):
+        return self.code + self.data
+    def add_section(self, section, size):
+        if section.startswith('.text'):
+            self.code += size
+        elif section != '.bss':
+            self.data += size
+
 size_by_source = {}
 with open(args.map_file) as f:
     memory_map_started = False
     current_section = None
     for line in f:
         if memory_map_started:
-            if line.startswith((".", " .")):
+            if line.startswith((".", " .", " *fill*")):
                 pieces = line.strip().split(None, 3)  # Don't split paths containing spaces
                 if line.startswith("."):
                     current_section = pieces[0]
-                elif len(pieces) >= 3 and current_section in [".rodata", ".text"] and "=" not in pieces and "before" not in pieces:
+                elif len(pieces) >= 3 and "=" not in pieces and "before" not in pieces:
                     if pieces[0] == "*fill*":
                         source = pieces[0]
                         size = int(pieces[-1], 16)
@@ -59,13 +70,20 @@ with open(args.map_file) as f:
                             where = max(source.rfind('\\'), source.rfind('/'))
                             if where:
                                 source = source[:where + 1] + '*.o'
+
                     if source not in size_by_source:
-                        size_by_source[source] = 0
-                    size_by_source[source] += size
+                        size_by_source[source] = SectionSize()
+                    size_by_source[source].add_section(current_section, size)
         elif line.strip() == "Linker script and memory map":
             memory_map_started = True
 
 sources = list(size_by_source.keys())
-sources.sort(key=lambda x: size_by_source[x])
+sources.sort(key = lambda x: size_by_source[x].total())
+sumtotal = sumcode = sumdata = 0
 for source in sources:
-    print("%s \t%s" % (os.path.normpath(source), size_by_source[source]))
+    size = size_by_source[source]
+    sumcode += size.code
+    sumdata += size.data
+    sumtotal += size.total()
+    print("%-40s \t%7s  (code: %d data: %d)" % (os.path.normpath(source), size.total(), size.code, size.data))
+print("TOTAL %d  (code: %d data: %d)" % (sumtotal, sumcode, sumdata))

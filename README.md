@@ -11,6 +11,7 @@ Requires python 2.7+ or 3.2+.
 `python analyze_map.py [--combine] firmware.elf.map`
 
 ## Example Output
+(Older output format)
 ```
 /usr/local/Cellar/arm-none-eabi-gcc/20150921/arm-none-eabi/lib/armv6-m/libm.a(lib_a-kf_rem_pio2.o) 	1888
 build-arduino_zero/py/mpprint.o 	1938
@@ -39,24 +40,25 @@ build-arduino_zero/py/compile.o 	11731
 
 An example with --combine:
 ```
-c:/mingw/lib/libshell32.a 	32
-c:/mingw/lib/libadvapi32.a 	48
-c:/mingw/lib/libmoldname.a 	64
-C:\Program Files\FreeBASIC\lib\win32\*.o 	80
-c:/mingw/lib/libgdi32.a 	160
-c:/mingw/lib/gcc/mingw32/4.8.1/*.o 	520
-win32/libSDL.dll.a 	544
-c:/mingw/lib/libuser32.a 	896
-c:/mingw/lib/*.o 	1536
-c:/mingw/lib/libmsvcrt.a 	1680
-c:/mingw/lib/libkernel32.a 	1744
-build\lib\SDL\*.o 	1984
-c:/mingw/lib/gcc/mingw32/4.8.1/libgcc.a 	4952
-c:/mingw/lib/libmingw32.a 	5696
-c:/mingw/lib/gcc/mingw32/4.8.1/libgcc_eh.a 	33408
-c:/mingw/lib/libmingwex.a 	53080
-c:/mingw/lib/gcc/mingw32/4.8.1\libstdc++.a 	63376
-C:\Program Files\FreeBASIC\lib\win32/libfbmt.a 	166992
-build\lib\*.o 	229856
-build\*.o 	4149088
+C:\Program Files\FreeBASIC-1.04.0-2-win32-mingworg\lib\win32\*.o 	     60  (code: 40 data: 20)
+c:/mingw/lib/libole32.a                  	     78  (code: 8 data: 70)
+c:/mingw/lib/libshell32.a                	    124  (code: 16 data: 108)
+c:/mingw/lib/libpsapi.a                  	    132  (code: 16 data: 116)
+c:/mingw/lib/libmoldname.a               	    132  (code: 24 data: 108)
+c:/mingw/lib/libadvapi32.a               	    168  (code: 24 data: 144)
+c:/mingw/lib/libuser32.a                 	    196  (code: 32 data: 164)
+*fill*                                   	    432  (code: 28 data: 404)
+c:/mingw/lib/gcc/mingw32/4.8.1/*.o       	    552  (code: 260 data: 292)
+c:/mingw/lib/*.o                         	    980  (code: 768 data: 212)
+c:/mingw/lib/libmsvcrt.a                 	   2790  (code: 680 data: 2110)
+c:/mingw/lib/libkernel32.a               	   3140  (code: 624 data: 2516)
+c:/mingw/lib/gcc/mingw32/4.8.1/libgcc.a  	   3736  (code: 2476 data: 1260)
+c:/mingw/lib/libmingw32.a                	   4232  (code: 2848 data: 1384)
+build\lib\*.o                            	   6244  (code: 6224 data: 20)
+c:/mingw/lib/gcc/mingw32/4.8.1/libgcc_eh.a 	  21252  (code: 16704 data: 4548)
+c:/mingw/lib/libmingwex.a                	  29992  (code: 24704 data: 5288)
+c:/mingw/lib/gcc/mingw32/4.8.1\libstdc++.a 	  49144  (code: 31624 data: 17520)
+C:\Program Files\FreeBASIC-1.04.0-win32-mingworg\lib\win32/libfbmt.a 	  51688  (code: 46272 data: 5416)
+build\*.o                                	 168248  (code: 149456 data: 18792)
+TOTAL 343320  (code: 282828 data: 60492)
 ```

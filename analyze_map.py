@@ -40,6 +40,12 @@ class SectionSize():
     def total(self):
         return self.code + self.data
     def add_section(self, section, size):
+        if section.startswith('.comment'):
+            return
+        if section.startswith('.debug'):
+            return
+        if section.startswith('.ARM.attributes'):
+            return
         if section.startswith('.text'):
             self.code += size
         elif section != '.bss':
